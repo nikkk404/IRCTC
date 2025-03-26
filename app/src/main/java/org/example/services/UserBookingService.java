@@ -64,4 +64,5 @@ public class UserBookingService {
         return Boolean.FALSE;
     }
 
+    public List<Train> getTrain
 }

@@ -94,11 +94,86 @@ public class App {
                     break;
                 case 4:
                     System.out.println("Searching for Trains...");
-                    // Implement train search logic here
+                    System.out.println("Type your source station:");
+                    String source = scanner.next();
+
+                    System.out.println("Type your destination station:");
+                    String dest = scanner.next();
+
+                    // Fetch trains between the given source and destination
+                    List<Train> trains = userBookingService.getTrains(source, dest);
+
+                    // Check if no trains are found
+                    if (trains == null || trains.isEmpty()) {
+                        System.out.println("No trains available between " + source + " and " + dest);
+                        break;
+                    }
+
+                    int index = 1;
+                    for (Train t : trains) {
+                        System.out.println(index + ". Train ID: " + t.getTrainId());
+
+                        // Ensure station time data exists before iterating
+                        if (t.getStationTimes() != null) {
+                            for (Map.Entry<String, String> entry : t.getStationTimes().entrySet()) {
+                                System.out.println("   Station: " + entry.getKey() + " | Time: " + entry.getValue());
+                            }
+                        }
+                        index++;
+                    }
+
+                    System.out.println("Select a train by typing its index (1,2,3...):");
+                    int selectedIndex = scanner.nextInt();
+
+                    // Validate train selection
+                    if (selectedIndex < 1 || selectedIndex > trains.size()) {
+                        System.out.println("Invalid selection. Please try again.");
+                        break;
+                    }
+
+                    Train selectedTrain = trains.get(selectedIndex - 1);
+                    System.out.println("You selected Train ID: " + selectedTrain.getTrainId());
+
                     break;
                 case 5:
                     System.out.println("Booking a Seat...");
-                    // Implement seat booking logic here
+                    if (trainSelectedForBooking == null) {
+                        System.out.println("No train selected. Please search and select a train first.");
+                        break;
+                    }
+
+                    // Display available seats
+                    System.out.println("Available Seats:");
+                    for (List<Integer> row : seats) {
+                        for (Integer val : row) {
+                            System.out.print(val + " ");
+                        }
+                        System.out.println();
+                    }
+
+                    // Ask for seat selection
+                    System.out.println("Select the seat by typing the row and column:");
+                    System.out.print("Enter the row: ");
+                    int row = scanner.nextInt();
+
+                    System.out.print("Enter the column: ");
+                    int col = scanner.nextInt();
+
+                    // Validate row and column input (assuming seats is a List<List<Integer>>)
+                    if (row < 0 || row >= seats.size() || col < 0 || col >= seats.get(row).size()) {
+                        System.out.println("Invalid seat selection. Please enter a valid row and column.");
+                        break;
+                    }
+
+                    System.out.println("Booking your seat....");
+                    Boolean booked = userBookingService.bookTrainSeat(trainSelectedForBooking, row, col);
+
+                    if (Boolean.TRUE.equals(booked)) {
+                        System.out.println("Booked! Enjoy your journey.");
+                    } else {
+                        System.out.println("Can't book this seat. It may already be taken.");
+                    }
+
                     break;
                 case 6:
                     System.out.println("Cancelling Booking...");
