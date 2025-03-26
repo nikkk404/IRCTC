@@ -3,18 +3,115 @@
  */
 package org.example;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import org.example.services.UserBookingService;
+
+import java.io.IOException;
+import java.util.Scanner;
 
 public class App {
 
     public static void main(String[] args) {
-        List<Integer> l= Arrays.asList(1,2,3,4,5,6,7,8,9);
-        l.stream().map(e -> e*2).collect(Collectors.toList());
+        System.out.println("Running...");
+        Scanner sc = new Scanner(System.in);
+        int option = 0;
+        UserBookingService userBookingService = null;
+
+        try {
+            userBookingService = new UserBookingService();
+        } catch (IOException ex) {
+            System.out.println("Error initializing UserBookingService: " + ex.getMessage());
+            return;
+        }
+
+        while (option != 7) {
+            System.out.println("Choose option:");
+            System.out.println("1. Sign up");
+            System.out.println("2. Login");
+            System.out.println("3. Fetch Booking");
+            System.out.println("4. Search Train");
+            System.out.println("5. Book a Seat");
+            System.out.println("6. Cancel my booking");
+            System.out.println("7. Exit");
+            option = sc.nextInt();
+
+            switch (option) {
+                case 1:
+                    System.out.println("Signing up...");
+                    System.out.println("Enter the username to sign up:");
+                    String nameToSignUp = scanner.next();
+
+                    System.out.println("Enter the password to sign up:");
+                    String passwordToSignUp = scanner.next();
+
+                    // Hash the password securely
+                    String hashedPassword = UserServiceUtil.hashPassword(passwordToSignUp);
+
+                    // Generate unique user ID
+                    String userId = UUID.randomUUID().toString();
+
+                    // Create User object
+                    User userToSignUp = new User();
+                    userToSignUp.setName(nameToSignUp);
+                    userToSignUp.setPassword(passwordToSignUp);  // Storing raw password (Not recommended)
+                    userToSignUp.setHashedPassword(hashedPassword);
+                    userToSignUp.setUserId(userId);
+                    userToSignUp.setTicketsBooked(new ArrayList<>());
+
+                    // Call signup service
+                    userBookingService.signUp(userToSignUp);
+
+                    System.out.println("Signup successful!");
+                    break;
+                case 2:
+                    System.out.println("Logging in...");
+                    System.out.println("Enter the username to login:");
+                    String nameToLogin = scanner.next();
+
+                    System.out.println("Enter the password to login:");
+                    String passwordToLogin = scanner.next();
+
+                    // Hash the entered password for comparison
+                    String hashedPassword = UserServiceUtil.hashPassword(passwordToLogin);
+
+                    try {
+                        // Authenticate user
+                        boolean isAuthenticated = userBookingService.login(nameToLogin, hashedPassword);
+
+                        if (isAuthenticated) {
+                            System.out.println("Login successful!");
+                        } else {
+                            System.out.println("Invalid username or password.");
+                        }
+                    } catch (IOException ex) {
+                        System.out.println("Error during login: " + ex.getMessage());
+                        return;
+                    }
+
+                    break;
+                case 3:
+                    System.out.println("Fetching Booking...");
+                   userBookingService.fetchBooking();
+                    break;
+                case 4:
+                    System.out.println("Searching for Trains...");
+                    // Implement train search logic here
+                    break;
+                case 5:
+                    System.out.println("Booking a Seat...");
+                    // Implement seat booking logic here
+                    break;
+                case 6:
+                    System.out.println("Cancelling Booking...");
+                    // Implement booking cancellation logic here
+                    break;
+                case 7:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid option! Please choose a valid number.");
+            }
+        }
+
+        sc.close();
     }
-
-
 }

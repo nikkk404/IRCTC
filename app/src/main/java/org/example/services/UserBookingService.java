@@ -1,8 +1,11 @@
 package org.example.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import org.example.entities.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.util.UserServiceUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -18,9 +21,18 @@ public class UserBookingService {
     public UserBookingService(User user1) throws IOException
     {
         this.user=user1;
-        File users=new File(USERS_PATH);
-        userList =objectMapper.readValue(users, new TypeReference<List<User>>() {});
+        loadusers();
 
+    }
+
+    public UserBookingService() throws IOException{
+        loadusers();
+
+    }
+
+    public List<User> loadusers() throws IOException{
+        File users=new File(USERS_PATH);
+        return objectMapper.readValue(users, new TypeReference<List<User>>() {});
     }
 
     public Boolean loginUser(){
@@ -38,6 +50,18 @@ public class UserBookingService {
         }catch (IOException ex){
             return Boolean.FALSE;
         }
+    }
+
+    private void saveUserListToFile() throws IOException{
+        File usersFile=new File(USERS_PATH);
+        objectMapper.writeValue(usersFile,userList);
+    }
+
+    public void fetchBooking(){
+        user.printTickets();
+    }
+    public Boolean cancelBooking(String ticketId){
+        return Boolean.FALSE;
     }
 
 }
